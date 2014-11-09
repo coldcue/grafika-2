@@ -89,12 +89,12 @@ void onInitialization() {
 
     world->objects.push(new GroundObject(whitediffuse));
 
-    world->objects.push(new SphereObject(gold, 1.0f, Point(4.0f, 1.0f, 2.5f)));
-    world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 5.0f)));
-    world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 4.0f, 2.5f)));
-    world->objects.push(new SphereObject(silver, 1.0f, Point(4.0f, 4.0f, 2.5f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 1.0f, 2.5f)));
+    world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 4.5f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 5.0f, 2.5f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(5.0f, 5.0f, 2.5f)));
 
-    world->objects.push(new SphereObject(glass, 1.5f, Point(2.4f, 2.4f, 1.0f)));
+    world->objects.push(new SphereObject(silver, 1.5f, Point(2.4f, 2.4f, 1.5f)));
 
     Point eye(-20.0f, -20.0f, 7.0f);
     Point lookAt(-7.1f, -7.1f, 4.5f);
