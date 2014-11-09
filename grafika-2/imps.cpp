@@ -249,7 +249,7 @@ public:
         if (disc < 0.0f)
             return false;
 
-        dir = ray.v / cn + n * (cosa / cn - sqrtf(disc)) + ray.v / cn;
+        dir = (ray.v / cn + n * (cosa / cn - sqrtf(disc)) + ray.v / cn).normalize();
         return true;
     }
 
@@ -356,9 +356,9 @@ public:
 
     }
 
-    Color trace(Ray &ray, int d = 0, bool out = false) {
+    Color trace(Ray &ray, Color power = Color(), int d = 0, bool out = false) {
         if (d > maxTrace)
-            return ambientLight;
+            return background * 0.5f;
 
         Color color;
         float t = FLOAT_MAX;
@@ -366,27 +366,30 @@ public:
         Object *object;
 
         if (!firstIntersect(ray, t, object, n)) {
-            if (d == 0)
-                return background;
-            else
-                return ambientLight;
+            return background * 0.5f;
         }
 
         Point point = ray.getPoint(t);
 
         color = directLight(point, ray, n, object);
 
+        Color fresnel = object->surface.fresnel(ray.v, n);
         if (object->surface.reflective) {
             Ray reflectRay = Ray(point, object->reflectDir(ray, n));
-            color = color + object->surface.k * trace(reflectRay, d + 1);
+            color = color + fresnel * trace(reflectRay, fresnel, d + 1);
         }
 
         if (object->surface.refractive) {
             Vector dir;
             if (object->refractDir(ray, n, dir, out)) {
                 Ray refractRay = Ray(point, dir);
-                color = color + object->surface.k * trace(refractRay, d + 1, !out);
+                Color fresnel2 = fresnel * -1.0f + 1.0f;
+                color = color + fresnel2 * trace(refractRay, fresnel2, d + 1, !out);
             }
+        }
+
+        if (!object->surface.refractive && !object->surface.reflective && d > 0) {
+            color = color + power * 0.1f;
         }
 
         return color;
@@ -449,7 +452,7 @@ public:
 
         t = (t1 < t2) ? t1 : t2;
 
-        n = (ray.getPoint(t) - p0) / r;
+        n = ((ray.getPoint(t) - p0) / r).normalize();
 
         return true;
     }
