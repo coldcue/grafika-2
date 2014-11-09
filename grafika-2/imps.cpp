@@ -19,6 +19,8 @@
 #endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+const float FLOAT_MAX = powf(10, 37);
+
 //--------------------------------------------------------
 // 3D Vektor
 //--------------------------------------------------------
@@ -196,12 +198,14 @@ struct Surface {
     Color f0;
 
     float shininess;
+    float navg;
     bool refractive;
     bool reflective;
 
     Surface(Color k, Color n, bool refractive, bool reflective)
             : k(k), n(n), refractive(refractive), reflective(reflective) {
         f0 = ((n - 1.0f) * (n - 1.0f) + k * k) / ((n + 1.0f) * (n + 1.0f) + k * k);
+        navg = (n.r + n.g + n.b) / 3.0f;
     }
 
     Color fresnel(Vector &v, Vector &n) {
@@ -236,8 +240,17 @@ public:
         return ray.v + n * (n.negate() * ray.v) * 2;
     }
 
-    Vector refractDir(Ray &ray, Vector &n) {
-        return Vector(); //TODO calc refract dir
+    bool refractDir(Ray &ray, Vector &n, Vector &dir, bool &out) {
+        float cosa = ray.v.normalize() * n.negate();
+
+        float cn = (out) ? 1.0f / surface.navg : surface.navg;
+        float disc = 1 - (1 - cosa * cosa) / (cn * cn);
+
+        if (disc < 0.0f)
+            return false;
+
+        dir = ray.v / cn + n * (cosa / cn - sqrtf(disc)) + ray.v / cn;
+        return true;
     }
 
     virtual bool intersect(Ray &ray, float &t, Vector &n) = 0;
@@ -288,7 +301,7 @@ class World {
             Vector n_temp;
             float t_temp;
             if (objects[i]->intersect(r, t_temp, n_temp)) {
-                if (t_temp > 0 && t_temp < t) {
+                if (t_temp > 0.01f && t_temp < t) {
                     t = t_temp;
                     n = n_temp;
                     o = objects[i];
@@ -310,15 +323,16 @@ class World {
         Color color = object->surface.k * ambientLight;
 
         for (int i = 0; i < lights.size; i++) {
-            Vector lightDirection = (lights[i].p0 - p).normalize();
+            Vector lightDirection = lights[i].p0 - p;
             float lightDistance = lights[i].p0.distance(p);
 
             Ray shadowRay(p, lightDirection);
 
-            float t;
+            float t = FLOAT_MAX;
             bool intersect = firstIntersect(shadowRay, t);
+
             if (!intersect || p.distance(shadowRay.getPoint(t)) > lightDistance) {
-                float costheta = lightDirection * n;
+                float costheta = lightDirection.normalize() * n;
                 Color diffuseLight = (costheta > 0.0f) ? object->surface.k * costheta : Color();
 
                 Color blinnShine = Color();                //TODO add Blinn shine
@@ -343,12 +357,12 @@ public:
 
     }
 
-    Color trace(Ray &ray, int d = 0) {
+    Color trace(Ray &ray, int d = 0, bool out = false) {
         if (d > maxTrace)
             return ambientLight;
 
         Color color;
-        float t = powf(10, 37);
+        float t = FLOAT_MAX;
         Vector n;
         Object *object;
 
@@ -365,12 +379,15 @@ public:
 
         if (object->surface.reflective) {
             Ray reflectRay = Ray(point, object->reflectDir(ray, n));
-            color = color - object->surface.k * trace(reflectRay, d + 1);
+            color = color + object->surface.k * trace(reflectRay, d + 1);
         }
 
         if (object->surface.refractive) {
-            Ray refractRay = Ray(point, object->refractDir(ray, n));
-            color = color - object->surface.k * trace(refractRay, d + 1);
+            Vector dir;
+            if (object->refractDir(ray, n, dir, out)) {
+                Ray refractRay = Ray(point, dir);
+                color = color + object->surface.k * trace(refractRay, d + 1, !out);
+            }
         }
 
         return color;
@@ -444,11 +461,10 @@ public:
 //--------------------------------------------------------
 class GroundObject : public Object {
     bool intersect(Ray &ray, float &t, Vector &n) {
-        if(ray.v.z == 0)
+        if (ray.v.z == 0)
             return false;
         t = (-1.0f * ray.p0.z) / ray.v.z;
         n = Vector(0.0f, 0.0f, 1.0f);
-
         return true;
     }
 
