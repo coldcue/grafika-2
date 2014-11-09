@@ -81,7 +81,26 @@ struct QVector {
         x = y = z = w = 0.0f;
     }
 
+    QVector(Vector v) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = 1;
+    }
+
     QVector(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {
+    }
+
+    QVector operator*(float a) {
+        return QVector(x * a, y * a, z * a, w * a);
+    }
+
+    float operator*(const QVector &v) {    // dot product
+        return (x * v.x + y * v.y + z * v.z + w * v.w);
+    }
+
+    operator Vector() {
+        return Vector(x, y, z);
     }
 
 };
@@ -489,31 +508,39 @@ public:
 
 
 //--------------------------------------------------------
-// CylinderObject
+// EllipsoidObject
 //--------------------------------------------------------
-class CylinderObject : public Object {
-    Vector v;
-    Point p0;
+class EllipsoidObject : public Object {
+    QMatrix Q;
 
-    CylinderObject(Surface surface, Vector v, Point p0) : Object(surface, 0.0, p0), v(v), p0(p0) {
+public:
+    EllipsoidObject(Surface surface, QMatrix Q) : Object(surface, 0.0f, Point()), Q(Q) {
 
     }
 
     bool intersect(Ray &ray, float &t, Vector &n) {
         //if (!intersectBV(ray)) return false;
 
-        // a^2 * vy^2 + b^2 * vx^2
-        float a = (v.x * v.x) * (ray.v.y * ray.v.y) + (v.y * v.y) * (ray.v.x * ray.v.x);
-        // 2 * a^2 * y0 * vy + 2 * b^2 * x0 * vx
-        float b = (2 * (v.x * v.x) * ray.p0.y * ray.v.y) + (2 * (v.y * v.y) * ray.p0.x * ray.v.x);
-        // a^2 * y0^2 + b^2 * x0^2
-        float c = (v.x * v.x) * (ray.p0.y * ray.p0.y) + (v.y * v.y) * (ray.p0.x * ray.p0.x) - (v.x * v.x) * (v.y * v.y);
+        QVector rayv(ray.v);
+        QVector rayp0(ray.p0.vectorFromOrigo());
 
+        float a = rayv * Q * rayv;
+        float b = rayv * 2 * Q * rayp0;
+        float c = rayp0 * Q * rayp0;
 
         if (!closestRoot(a, b, c, t)) {
             return false;
         }
 
+        Point p = ray.getPoint(t);
+
+        Vector temp(
+                Q.m[0][0] * p.x + Q.m[1][0] * p.y + Q.m[2][0] * p.z + Q.m[3][0],
+                Q.m[0][1] * p.x + Q.m[1][1] * p.y + Q.m[2][1] * p.z + Q.m[3][1],
+                Q.m[0][2] * p.x + Q.m[1][2] * p.y + Q.m[2][2] * p.z + Q.m[3][2]
+        );
+
+        n = temp.normalize();
 
         return true;
     }

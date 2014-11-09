@@ -110,6 +110,14 @@ void onInitialization() {
     world->objects.push(new SphereObject(glass, 1.5f, Point(2.4f, 2.4f, 1.5f)));
     world->objects.push(new SphereObject(glass, 1.0f, Point(2.4f, 2.4f, 5.5f)));
 
+    QMatrix ellipse;
+    ellipse.m[0][0] = 1;
+    ellipse.m[1][1] = 1;
+    ellipse.m[2][2] = 1;
+    ellipse.m[3][3] = -1;
+
+    world->objects.push(new EllipsoidObject(silver, ellipse));
+
     Point eye(-20.0f, -20.0f, 5.0f);
     Point lookAt(-10.0f, -10.0f, 4.5f);
 
