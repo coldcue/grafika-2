@@ -202,8 +202,8 @@ struct Surface {
     bool refractive;
     bool reflective;
 
-    Surface(Color k, Color n, bool refractive, bool reflective)
-            : k(k), n(n), refractive(refractive), reflective(reflective) {
+    Surface(Color k, Color n, float shininess, bool refractive, bool reflective)
+            : k(k), n(n), shininess(shininess), refractive(refractive), reflective(reflective) {
         f0 = ((n - 1.0f) * (n - 1.0f) + k * k) / ((n + 1.0f) * (n + 1.0f) + k * k);
         navg = (n.r + n.g + n.b) / 3.0f;
     }
@@ -319,23 +319,22 @@ class World {
     }
 
 
-    Color directLight(Point &p, Vector &n, Object *object) {
+    Color directLight(Point &p, Ray &ray, Vector &n, Object *object) {
         Color color = object->surface.k * ambientLight;
 
         for (int i = 0; i < lights.size; i++) {
-            Vector lightDirection = lights[i].p0 - p;
+            Ray shadowRay(p, (lights[i].p0 - p).normalize());
             float lightDistance = lights[i].p0.distance(p);
-
-            Ray shadowRay(p, lightDirection);
 
             float t = FLOAT_MAX;
             bool intersect = firstIntersect(shadowRay, t);
 
             if (!intersect || p.distance(shadowRay.getPoint(t)) > lightDistance) {
-                float costheta = lightDirection.normalize() * n;
+                float costheta = shadowRay.v * n;
                 Color diffuseLight = (costheta > 0.0f) ? object->surface.k * costheta : Color();
 
-                Color blinnShine = Color();                //TODO add Blinn shine
+                float cosphi = (shadowRay.v.negate() + ray.v).normalize() * n;
+                Color blinnShine = (cosphi > 0.0f) ? object->surface.n * powf(cosphi, object->surface.shininess) : Color();
                 color = color + (diffuseLight + blinnShine) * lights[i].color * lights[i].getIntensity(lightDistance);
             }
         }
@@ -375,7 +374,7 @@ public:
 
         Point point = ray.getPoint(t);
 
-        color = directLight(point, n, object);
+        color = directLight(point, ray, n, object);
 
         if (object->surface.reflective) {
             Ray reflectRay = Ray(point, object->reflectDir(ray, n));

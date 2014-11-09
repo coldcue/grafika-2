@@ -65,8 +65,6 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
 #include "imps.cpp"
-#include <iostream>
-
 
 const int screenWidth = 600;    // alkalmazás ablak felbontása
 const int screenHeight = 600;
@@ -78,10 +76,10 @@ World *world;
 void onInitialization() {
     glViewport(0, 0, screenWidth, screenHeight);
 
-    Surface whitediffuse =  Surface(Color(5.0f, 5.0f, 5.0f), Color(), false, false);
-    Surface glass =         Surface(Color(), Color(1.5f, 1.5f, 1.5f), true, true);
-    Surface gold =          Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), false, true);
-    Surface silver =        Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), false, true);
+    Surface whitediffuse =  Surface(Color(5.0f, 5.0f, 5.0f), Color(), 0.001f, false, false);
+    Surface glass =         Surface(Color(), Color(1.5f, 1.5f, 1.5f), 0.01f, true, true);
+    Surface gold =          Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), 1.0f, false, true);
+    Surface silver =        Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), 1.0f, false, true);
 
     world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.03f, 0.03f, 0.03f), 10);
 
@@ -93,10 +91,10 @@ void onInitialization() {
 
     world->objects.push(new SphereObject(gold, 1.0f, Point(4.0f, 1.0f, 2.4f)));
     world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 2.4f)));
-    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 4.0f, 2.4f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 4.0f, 2.4f)));
     world->objects.push(new SphereObject(silver, 1.0f, Point(4.0f, 4.0f, 2.4f)));
 
-    world->objects.push(new SphereObject(whitediffuse, 0.5f, Point(2.4f, 2.4f, 5.4f)));
+    world->objects.push(new SphereObject(glass, 1.5f, Point(2.4f, 2.4f, 1.0f)));
 
     Point eye(-20.0f, -20.0f, 7.0f);
     Point lookAt(-7.1f, -7.1f, 4.5f);
