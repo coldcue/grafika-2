@@ -83,18 +83,28 @@ void onInitialization() {
 
     world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.03f, 0.03f, 0.03f), 10);
 
-    world->lights.push(Light(Point(1.0f, 5.0f, 10.0f), Color(1.0f, 0.0f, 0.0f), 15.0f));
-    world->lights.push(Light(Point(3.0f, 3.0f, 10.0f), Color(0.0f, 1.0f, 0.0f), 15.0f));
-    world->lights.push(Light(Point(5.0f, 1.0f, 10.0f), Color(0.0f, 0.0f, 1.0f), 15.0f));
+    world->lights.push(Light(Point(1.0f, 5.0f, 30.0f), Color(1.0f, 0.0f, 0.0f), 100.0f));
+    world->lights.push(Light(Point(3.0f, 3.0f, 30.0f), Color(0.0f, 1.0f, 0.0f), 100.0f));
+    world->lights.push(Light(Point(5.0f, 1.0f, 30.0f), Color(0.0f, 0.0f, 1.0f), 100.0f));
 
     world->objects.push(new GroundObject(whitediffuse));
 
-    world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 1.0f, 2.5f)));
-    world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 4.5f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(5.0f, 1.0f, 2.5f)));
+    world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 2.5f)));
     world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 5.0f, 2.5f)));
-    world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 5.0f, 2.5f)));
+    world->objects.push(new SphereObject(glass, 1.0f, Point(5.0f, 5.0f, 2.5f)));
 
-    world->objects.push(new SphereObject(silver, 1.5f, Point(2.4f, 2.4f, 1.5f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 1.0f, 8.5f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 1.0f, 8.5f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 5.0f, 8.5f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(5.0f, 5.0f, 8.5f)));
+
+    world->objects.push(new SphereObject(silver, 2.0f, Point(8.0f, 8.0f, 4.5f)));
+    world->objects.push(new SphereObject(gold, 2.0f, Point(4.0f, 12.0f, 4.5f)));
+    world->objects.push(new SphereObject(gold, 2.0f, Point(12.0f, 4.0f, 4.5f)));
+
+    world->objects.push(new SphereObject(glass, 1.5f, Point(2.4f, 2.4f, 1.5f)));
+    world->objects.push(new SphereObject(glass, 1.0f, Point(2.4f, 2.4f, 5.5f)));
 
     Point eye(-20.0f, -20.0f, 5.0f);
     Point lookAt(-10.0f, -10.0f, 4.5f);
