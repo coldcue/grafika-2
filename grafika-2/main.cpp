@@ -78,8 +78,8 @@ void onInitialization() {
 
     Surface whitediffuse =  Surface(Color(5.0f, 5.0f, 5.0f), Color(), 0.1f, false, false);
     Surface glass =         Surface(Color(), Color(1.5f, 1.5f, 1.5f), 1.0f, true, true);
-    Surface gold =          Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), 1.0f, false, true);
-    Surface silver =        Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), 1.0f, false, true);
+    Surface gold =          Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), 5.0f, false, true);
+    Surface silver =        Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), 5.0f, false, true);
 
     world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.03f, 0.03f, 0.03f), 10);
 
@@ -91,18 +91,18 @@ void onInitialization() {
 
     world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 1.0f, 2.5f)));
     world->objects.push(new SphereObject(glass, 1.0f, Point(1.0f, 1.0f, 4.5f)));
-    world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 5.0f, 2.5f)));
-    world->objects.push(new SphereObject(silver, 1.0f, Point(5.0f, 5.0f, 2.5f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 5.0f, 2.5f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 5.0f, 2.5f)));
 
     world->objects.push(new SphereObject(silver, 1.5f, Point(2.4f, 2.4f, 1.5f)));
 
-    Point eye(-20.0f, -20.0f, 7.0f);
-    Point lookAt(-7.1f, -7.1f, 4.5f);
+    Point eye(-20.0f, -20.0f, 5.0f);
+    Point lookAt(-10.0f, -10.0f, 4.5f);
 
     Vector direction = (lookAt - eye).normalize();
     Vector right = (direction % Vector(0.0f, 0.0f, 1.0f)).normalize();
     Vector up = (right % direction).normalize();
-    float scale = 3.0f;
+    float scale = 2.5f;
 
 
     for (int i = 0; i < screenWidth * screenHeight; i++) {
