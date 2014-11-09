@@ -444,10 +444,9 @@ public:
 //--------------------------------------------------------
 class GroundObject : public Object {
     bool intersect(Ray &ray, float &t, Vector &n) {
-        float temp = ray.v.x + ray.v.y;
-
-        if (temp == 0.0f) return false;
-        t = -(ray.p0.x + ray.p0.y) / temp;
+        if(ray.v.z == 0)
+            return false;
+        t = (-1.0f * ray.p0.z) / ray.v.z;
         n = Vector(0.0f, 0.0f, 1.0f);
 
         return true;

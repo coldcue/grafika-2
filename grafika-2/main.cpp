@@ -78,27 +78,33 @@ World *world;
 void onInitialization() {
     glViewport(0, 0, screenWidth, screenHeight);
 
-    world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.01f, 0.01f, 0.01f), 4);
+    Surface whitediffuse =  Surface(Color(0.3f, 0.3f, 0.3f), Color(), false, false);
+    Surface glass =         Surface(Color(1.5f, 1.5f, 1.5f), Color(), true, true);
+    Surface gold =          Surface(Color(0.17f, 0.35f, 1.5f), Color(3.1f, 2.7f, 1.9f), false, true);
+    Surface silver =        Surface(Color(0.14f, 0.16f, 0.13f), Color(4.1f, 2.3f, 3.1f), false, true);
 
-    world->lights.push(Light(Point(1.0f, 2.0f, 6.0f), Color(1.0f, 0.0f, 0.0f), 10.0f));
-    world->lights.push(Light(Point(1.4f, 1.4f, 6.0f), Color(0.0f, 1.0f, 0.0f), 10.0f));
-    world->lights.push(Light(Point(2.0f, 1.0f, 6.0f), Color(0.0f, 0.0f, 1.0f), 10.0f));
+    world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.05f, 0.05f, 0.05f), 10);
 
-    //world->objects.push(new GroundObject(Surface(Color(4.0f, 4.0f, 4.0f), Color(), false, false)));
+    world->lights.push(Light(Point(1.0f, 5.0f, 15.0f), Color(1.0f, 0.0f, 0.0f), 1000.0f));
+    world->lights.push(Light(Point(3.0f, 3.0f, 15.0f), Color(0.0f, 1.0f, 0.0f), 1000.0f));
+    world->lights.push(Light(Point(5.0f, 1.0f, 15.0f), Color(0.0f, 0.0f, 1.0f), 1000.0f));
 
+    world->objects.push(new GroundObject(whitediffuse));
 
-    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 3.0f), Color(), false, false), 1.0f, Point(4.0f, 1.0f, 2.4f)));
-    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 3.0f), Color(), false, false), 1.0f, Point(1.0f, 1.0f, 2.4f)));
-    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 3.0f), Color(), false, false), 1.0f, Point(1.0f, 4.0f, 2.4f)));
-    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 3.0f), Color(), false, false), 1.0f, Point(4.0f, 4.0f, 2.4f)));
+    world->objects.push(new SphereObject(gold, 1.0f, Point(4.0f, 1.0f, 2.4f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 1.0f, 2.4f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 4.0f, 2.4f)));
+    world->objects.push(new SphereObject(whitediffuse, 1.0f, Point(4.0f, 4.0f, 2.4f)));
 
-    Point eye(-20.0f, -20.0f, 10.0f);
-    Point lookAt(-1.1f, -1.1f, 2.5f);
+    world->objects.push(new SphereObject(silver, 1.5f, Point(2.0f, 2.0f, 7.4f)));
+
+    Point eye(-17.0f, -17.0f, 7.0f);
+    Point lookAt(-7.1f, -7.1f, 4.5f);
 
     Vector direction = (lookAt - eye).normalize();
     Vector right = (direction % Vector(0.0f, 0.0f, 1.0f)).normalize();
     Vector up = (right % direction).normalize();
-    float scale = 8.0f;
+    float scale = 4.0f;
 
 
     for (int i = 0; i < screenWidth * screenHeight; i++) {
