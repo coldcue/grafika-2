@@ -400,6 +400,42 @@ class CylinderObject : public Object {
 };
 
 //--------------------------------------------------------
+// SphereObject
+//--------------------------------------------------------
+class SphereObject : public Object {
+    float r;
+    Point p0;
+    
+public:
+    SphereObject(Surface surface, float r, Point p0) : Object(surface, r, p0), r(r), p0(p0) {
+        
+    }
+    
+    bool intersect(Ray &ray, float &t, Vector &n) {
+        //if (!intersectBV(ray)) return false;
+        
+        Vector temp (ray.p0 - p0);
+        
+        float a = ray.v * ray.v;
+        float b = temp * ray.v * 2.0f;
+        float c = temp * temp - (r * r);
+        
+        float disc = b * b - 4.0f * a * c;
+        
+        if(disc < 0.0f) return false;
+        
+        float t1 = (-1.0f * b + sqrtf(disc)) / (2.0f * a);
+        float t2 = (-1.0f * b - sqrtf(disc)) / (2.0f * a);
+        
+        t = (t1 < t2) ? t1 : t2;
+        
+        n = (ray.getPoint(t) - p0) / r;
+        
+        return true;
+    }
+};
+
+//--------------------------------------------------------
 // GroundObject
 //--------------------------------------------------------
 class GroundObject : public Object {

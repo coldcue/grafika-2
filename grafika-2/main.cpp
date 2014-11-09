@@ -86,6 +86,8 @@ void onInitialization() {
     
     world->objects.push(new GroundObject(Surface(Color(4.0f, 4.0f, 4.0f), Color(), false, false)));
     
+    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 0.0f), Color(), false, false), 0.4f, Point(1.2f,1.6f,0.4f)));
+    
     Point eye(-20.0f, -20.0f, 2.0f);
     Point lookAt(0.0f, 0.0f, 0.0f);
     
