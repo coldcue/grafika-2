@@ -77,43 +77,43 @@ World *world;
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization() {
     glViewport(0, 0, screenWidth, screenHeight);
-    
+
     world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.0001f, 0.0001f, 0.0001f), 4);
-    
-    world->lights.push(Light(Point(1.0f, 2.0f, 2.0f), Color(2.0f, 0.0f, 0.0f)));
-    world->lights.push(Light(Point(1.4f, 1.4f, 2.0f), Color(0.0f, 2.0f, 0.0f)));
-    world->lights.push(Light(Point(2.0f, 1.0f, 2.0f), Color(0.0f, 0.0f, 2.0f)));
-    
+
+    world->lights.push(Light(Point(1.0f, 2.0f, 2.0f), Color(1.0f, 0.0f, 0.0f), 3.0f));
+    world->lights.push(Light(Point(1.4f, 1.4f, 2.0f), Color(0.0f, 1.0f, 0.0f), 3.0f));
+    world->lights.push(Light(Point(2.0f, 1.0f, 2.0f), Color(0.0f, 0.0f, 1.0f), 3.0f));
+
     world->objects.push(new GroundObject(Surface(Color(4.0f, 4.0f, 4.0f), Color(), false, false)));
-    
-    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 0.0f), Color(), false, false), 0.4f, Point(1.2f,1.6f,0.4f)));
-    
+
+    world->objects.push(new SphereObject(Surface(Color(3.0f, 3.0f, 0.0f), Color(), false, false), 0.4f, Point(1.2f, 1.6f, 0.4f)));
+
     Point eye(-20.0f, -20.0f, 1.5f);
     Point lookAt(0.0f, 0.0f, 0.5f);
-    
+
     Vector direction = lookAt - eye;
     Vector right = (direction % Vector(0.0f, 0.0f, 1.0f)).normalize();
     Vector up = (right % direction).normalize();
-    
-    
+
+
     for (int i = 0; i < screenWidth * screenHeight; i++) {
         int x = i % screenHeight;
         int y = (i - (i % screenHeight)) / screenWidth;
-        
+
         Point pixel = lookAt + right * (2.0f * x / screenWidth - 1.0f) + up * (2.0f * y / screenHeight - 1.0f);
         Ray ray(pixel, (pixel - eye).normalize());
-        
+
         image[i] = world->trace(ray);
     }
-    
-    
+
+
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
 void onDisplay() {
     // Atmasoljuk a kepet a rasztertarba
     glDrawPixels(screenWidth, screenHeight, GL_RGB, GL_FLOAT, image);
-    
+
     //    // Majd rajzolunk egy kek haromszoget
     //    glColor3f(0, 0, 1);
     //    glBegin(GL_TRIANGLES);
@@ -123,35 +123,35 @@ void onDisplay() {
     //    glEnd();
     //
     //    // ...
-    
+
     glutSwapBuffers();                    // Buffercsere: rajzolas vege
-    
+
 }
 
 // Billentyuzet esemenyeket lekezelo fuggveny (lenyomas)
 void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'd') glutPostRedisplay();        // d beture rajzold ujra a kepet
-    
+
 }
 
 // Billentyuzet esemenyeket lekezelo fuggveny (felengedes)
 void onKeyboardUp(unsigned char key, int x, int y) {
-    
+
 }
 
 // Eger esemenyeket lekezelo fuggveny
 void onMouse(int button, int state, int x, int y) {
-    
+
 }
 
 // Eger mozgast lekezelo fuggveny
 void onMouseMotion(int x, int y) {
-    
+
 }
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle() {
-    
+
 }
 
 // ...Idaig modosithatod
@@ -163,24 +163,24 @@ int main(int argc, char **argv) {
     glutInitWindowSize(600, 600);            // Alkalmazas ablak kezdeti merete 600x600 pixel
     glutInitWindowPosition(100, 100);            // Az elozo alkalmazas ablakhoz kepest hol tunik fel
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);    // 8 bites R,G,B,A + dupla buffer + melyseg buffer
-    
+
     glutCreateWindow("Grafika hazi feladat");        // Alkalmazas ablak megszuletik es megjelenik a kepernyon
-    
+
     glMatrixMode(GL_MODELVIEW);                // A MODELVIEW transzformaciot egysegmatrixra inicializaljuk
     glLoadIdentity();
     glMatrixMode(GL_PROJECTION);            // A PROJECTION transzformaciot egysegmatrixra inicializaljuk
     glLoadIdentity();
-    
+
     onInitialization();                    // Az altalad irt inicializalast lefuttatjuk
-    
+
     glutDisplayFunc(onDisplay);                // Esemenykezelok regisztralasa
     glutMouseFunc(onMouse);
     glutIdleFunc(onIdle);
     glutKeyboardFunc(onKeyboard);
     glutKeyboardUpFunc(onKeyboardUp);
     glutMotionFunc(onMouseMotion);
-    
+
     glutMainLoop();                    // Esemenykezelo hurok
-    
+
     return 0;
 }

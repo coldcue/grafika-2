@@ -172,12 +172,18 @@ struct Ray {
 struct Light {
     Point p0;
     Color color;
+    float intensity;
     
     Light() {
         
     }
     
-    Light(Point const p0, Color const color) : p0(p0), color(color) {
+    Light(Point p0, Color color, float intensity) : p0(p0), color(color), intensity(intensity) {
+    }
+    
+    float getIntensity(float dist) {
+        if(dist < 1.0f) return intensity;
+        return intensity / (dist*dist);
     }
 };
 
