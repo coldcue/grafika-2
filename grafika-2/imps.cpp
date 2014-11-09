@@ -89,13 +89,13 @@ struct QVector {
 struct QMatrix {
     float m[4][4] = {0.0f};
 
-    QMatrix operator*(const QMatrix &qm) {
+    QMatrix operator*(const QMatrix &right) {
         QMatrix result;
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 float sum = 0;
                 for (int i = 0; i < 4; i++) {
-                    sum += m[i][y] * qm.m[x][i];
+                    sum += m[i][y] * right.m[x][i];
                 }
                 result.m[x][y] = sum;
             }
@@ -103,15 +103,15 @@ struct QMatrix {
         return result;
     }
 
-    QVector operator*(const QVector &qv) {
-        float x = m[0][0] * qv.x + m[1][0] * qv.y + m[2][0] * qv.z + m[3][0] * qv.w;
-        float y = m[0][1] * qv.x + m[1][1] * qv.y + m[2][1] * qv.z + m[3][1] * qv.w;
-        float z = m[0][2] * qv.x + m[1][2] * qv.y + m[2][2] * qv.z + m[3][2] * qv.w;
-        float w = m[0][3] * qv.x + m[1][3] * qv.y + m[2][3] * qv.z + m[3][3] * qv.w;
+    QVector operator*(const QVector &right) {
+        float x = m[0][0] * right.x + m[1][0] * right.y + m[2][0] * right.z + m[3][0] * right.w;
+        float y = m[0][1] * right.x + m[1][1] * right.y + m[2][1] * right.z + m[3][1] * right.w;
+        float z = m[0][2] * right.x + m[1][2] * right.y + m[2][2] * right.z + m[3][2] * right.w;
+        float w = m[0][3] * right.x + m[1][3] * right.y + m[2][3] * right.z + m[3][3] * right.w;
         return QVector(x, y, z, w);
     }
 
-    QMatrix operator*(const float f) {
+    QMatrix operator*(float f) {
         QMatrix result;
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
