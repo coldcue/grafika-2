@@ -94,6 +94,10 @@ void onInitialization() {
     world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 5.0f, 2.5f)));
     world->objects.push(new SphereObject(glass, 1.0f, Point(5.0f, 5.0f, 2.5f)));
 
+    world->objects.push(new SphereObject(silver, 1.0f, Point(5.0f, 1.0f, 0.0f)));
+    world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 5.0f, 0.0f)));
+
+
     world->objects.push(new SphereObject(gold, 1.0f, Point(5.0f, 1.0f, 8.5f)));
     world->objects.push(new SphereObject(silver, 1.0f, Point(1.0f, 1.0f, 8.5f)));
     world->objects.push(new SphereObject(gold, 1.0f, Point(1.0f, 5.0f, 8.5f)));
