@@ -240,6 +240,9 @@ public:
     };
 };
 
+//--------------------------------------------------------
+// DynamicArray
+//--------------------------------------------------------
 template<class T>
 class DynamicArray {
     int capacity;
@@ -248,11 +251,11 @@ class DynamicArray {
 public:
     int size;
     
-    DynamicArray(int capacity) : capacity(capacity) {
+    DynamicArray(int capacity) : capacity(capacity), size(0), array(NULL) {
         array = new T[capacity];
     }
     
-    void push(T o) {
+    void push(const T &o) {
         if (size < capacity)
             array[size++] = o;
     }
@@ -262,7 +265,7 @@ public:
     }
     
     ~DynamicArray() {
-        delete array;
+        delete [] array;
     }
 };
 
@@ -300,7 +303,7 @@ class World {
     Color directLight(Point &p, Object *object, Vector &n) {
         Color color = object->surface.k * ambientLight;
         
-        for (int i; i < lights.size; i++) {
+        for (int i = 0; i < lights.size; i++) {
             Vector lightDirection = lights[i].p0 - p;
             float lightDistance = lights[i].p0.distance(p);
             
@@ -311,7 +314,7 @@ class World {
             if (!intersect || p.distance(shadowRay.getPoint(t)) > lightDistance) {
                 Color diffuseLight = (lightDirection * n > 0.0f) ? object->surface.k : Color();
                 Color blinnShine = Color();                //TODO add Blinn shine
-                color = color + (diffuseLight + blinnShine) * lightIntensity(lightDistance);
+                color = color + (diffuseLight + blinnShine) * lights[i].color * lightIntensity(lightDistance);
             }
         }
         
@@ -319,7 +322,7 @@ class World {
     }
     
     float lightIntensity(float dist) {
-        return 1 / (dist * dist);
+        return 1.0f / (dist * dist);
     }
     
 public:

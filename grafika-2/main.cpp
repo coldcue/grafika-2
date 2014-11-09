@@ -78,16 +78,16 @@ World *world;
 void onInitialization() {
     glViewport(0, 0, screenWidth, screenHeight);
     
-    world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.1f, 0.1f, 0.1f), 4);
+    world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.0001f, 0.0001f, 0.0001f), 4);
     
     world->lights.push(Light(Point(1.0f, 2.0f, 1.0f), Color(1.0f, 0.0f, 0.0f)));
     world->lights.push(Light(Point(1.4f, 1.4f, 1.0f), Color(0.0f, 1.0f, 0.0f)));
-    world->lights.push(Light(Point(2.0f, 0.0f, 1.0f), Color(0.0f, 0.0f, 1.0f)));
+    world->lights.push(Light(Point(2.0f, 1.0f, 1.0f), Color(0.0f, 0.0f, 1.0f)));
     
-    world->objects.push(new GroundObject(Surface(Color(1.0f, 1.0f, 1.0f), Color(), false, false)));
+    world->objects.push(new GroundObject(Surface(Color(4.0f, 4.0f, 4.0f), Color(), false, false)));
     
     Point eye(-20.0f, -20.0f, 2.0f);
-    Point lookAt(0.0f, 0.0f, 0.5f);
+    Point lookAt(0.0f, 0.0f, 0.0f);
     
     Vector direction = lookAt - eye;
     Vector right = (direction % Vector(0.0f, 0.0f, 1.0f)).normalize();
