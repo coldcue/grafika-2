@@ -229,6 +229,18 @@ protected:
         return ray.getPoint(t).distance(bvP0) <= bvR;
     }
 
+    bool closestRoot(float a, float b, float c, float &t) {
+        float disc = b * b - 4.0f * a * c;
+
+        if (disc < 0.0f) return false;
+
+        float t1 = (-1.0f * b + sqrtf(disc)) / (2.0f * a);
+        float t2 = (-1.0f * b - sqrtf(disc)) / (2.0f * a);
+
+        t = (t1 < t2) ? t1 : t2;
+        return true;
+    }
+
 public:
     Surface surface;
 
@@ -443,14 +455,9 @@ public:
         float b = temp * ray.v * 2.0f;
         float c = temp * temp - (r * r);
 
-        float disc = b * b - 4.0f * a * c;
-
-        if (disc < 0.0f) return false;
-
-        float t1 = (-1.0f * b + sqrtf(disc)) / (2.0f * a);
-        float t2 = (-1.0f * b - sqrtf(disc)) / (2.0f * a);
-
-        t = (t1 < t2) ? t1 : t2;
+        if (!closestRoot(a, b, c, t)) {
+            return false;
+        }
 
         n = ((ray.getPoint(t) - p0) / r).normalize();
 
