@@ -71,6 +71,80 @@ struct Vector {
     }
 };
 
+//--------------------------------------------------------
+// Quadratic Matrix
+//--------------------------------------------------------
+struct QVector {
+    float x, y, z, w;
+
+    QVector() {
+        x = y = z = w = 0.0f;
+    }
+
+    QVector(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {
+    }
+
+};
+
+struct QMatrix {
+    float m[4][4] = {0.0f};
+
+    QMatrix operator*(const QMatrix &qm) {
+        QMatrix result;
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                float sum = 0;
+                for (int i = 0; i < 4; i++) {
+                    sum += m[i][y] * qm.m[x][i];
+                }
+                result.m[x][y] = sum;
+            }
+        }
+        return result;
+    }
+
+    QVector operator*(const QVector &qv) {
+        float x = m[0][0] * qv.x + m[1][0] * qv.y + m[2][0] * qv.z + m[3][0] * qv.w;
+        float y = m[0][1] * qv.x + m[1][1] * qv.y + m[2][1] * qv.z + m[3][1] * qv.w;
+        float z = m[0][2] * qv.x + m[1][2] * qv.y + m[2][2] * qv.z + m[3][2] * qv.w;
+        float w = m[0][3] * qv.x + m[1][3] * qv.y + m[2][3] * qv.z + m[3][3] * qv.w;
+        return QVector(x, y, z, w);
+    }
+
+    QMatrix operator*(const float f) {
+        QMatrix result;
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                result.m[x][y] = m[x][y] * f;
+            }
+        }
+        return result;
+    }
+
+    QMatrix transpose() {
+        QMatrix result;
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                result.m[x][y] = m[y][x];
+            }
+        }
+        return result;
+    }
+
+};
+
+QVector operator*(const QVector &left, const QMatrix &right) {
+    float x = right.m[0][0] * left.x + right.m[0][1] * left.y + right.m[0][2] * left.z + right.m[0][3] * left.w;
+    float y = right.m[1][0] * left.x + right.m[1][1] * left.y + right.m[1][2] * left.z + right.m[1][3] * left.w;
+    float z = right.m[2][0] * left.x + right.m[2][1] * left.y + right.m[2][2] * left.z + right.m[2][3] * left.w;
+    float w = right.m[3][0] * left.x + right.m[3][1] * left.y + right.m[3][2] * left.z + right.m[3][3] * left.w;
+    return QVector(x, y, z, w);
+}
+
+
+//--------------------------------------------------------
+// 3D Point
+//--------------------------------------------------------
 struct Point {
     float x, y, z;
 
@@ -344,7 +418,6 @@ class World {
             if (!intersect || p.distance(shadowRay.getPoint(t)) > lightDistance) {
                 float costheta = shadowRay.v * n;
                 Color diffuseLight = (costheta > 0.0f) ? object->surface.k * costheta : Color();
-
                 float cosphi = (shadowRay.v.negate() + ray.v).normalize() * n;
                 Color blinnShine = (cosphi > 0.0f) ? object->surface.n * powf(cosphi, object->surface.shininess) : Color();
                 color = color + (diffuseLight + blinnShine) * lights[i].color * lights[i].getIntensity(lightDistance);
@@ -440,7 +513,6 @@ class CylinderObject : public Object {
         if (!closestRoot(a, b, c, t)) {
             return false;
         }
-
 
 
         return true;
