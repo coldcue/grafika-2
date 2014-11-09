@@ -300,7 +300,7 @@ class World {
     }
     
     
-    Color directLight(Point &p, Object *object, Vector &n) {
+    Color directLight(Point &p, Vector &n, Object *object) {
         Color color = object->surface.k * ambientLight;
         
         for (int i = 0; i < lights.size; i++) {
@@ -312,7 +312,9 @@ class World {
             float t;
             bool intersect = firstIntersect(shadowRay, t);
             if (!intersect || p.distance(shadowRay.getPoint(t)) > lightDistance) {
-                Color diffuseLight = (lightDirection * n > 0.0f) ? object->surface.k : Color();
+                float costheta = lightDirection.normalize() * n;
+                Color diffuseLight = (costheta > 0.0f) ? object->surface.k * costheta : Color();
+                
                 Color blinnShine = Color();                //TODO add Blinn shine
                 color = color + (diffuseLight + blinnShine) * lights[i].color * lightIntensity(lightDistance);
             }
@@ -322,6 +324,9 @@ class World {
     }
     
     float lightIntensity(float dist) {
+        if(dist < 1) {
+            return 1.0f;
+        }
         return 1.0f / (dist * dist);
     }
     
@@ -357,7 +362,7 @@ public:
         
         Point point = ray.getPoint(t);
         
-        color = directLight(point, object, n);
+        color = directLight(point, n, object);
         
         if (object->surface.reflective) {
             Ray reflectRay = Ray(point, object->reflectDir(ray, n));
