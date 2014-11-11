@@ -65,9 +65,10 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
 #include "imps.cpp"
+#include "../bitmap_image.hpp"
 
-const int screenWidth = 600;    // alkalmazás ablak felbontása
-const int screenHeight = 600;
+const int screenWidth = 10000;    // alkalmazás ablak felbontása
+const int screenHeight = 10000;
 
 Color image[screenWidth * screenHeight];
 World *world;
@@ -76,16 +77,16 @@ World *world;
 void onInitialization() {
     glViewport(0, 0, screenWidth, screenHeight);
 
-    Surface whitediffuse =  Surface(Color(5.0f, 5.0f, 5.0f), Color(), 0.1f, false, false);
-    Surface glass =         Surface(Color(), Color(1.5f, 1.5f, 1.5f), 1.0f, true, true);
-    Surface gold =          Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), 5.0f, false, true);
-    Surface silver =        Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), 5.0f, false, true);
+    Surface whitediffuse = Surface(Color(5.0f, 5.0f, 5.0f), Color(), 0.1f, false, false);
+    Surface glass = Surface(Color(), Color(1.5f, 1.5f, 1.5f), 1.0f, true, true);
+    Surface gold = Surface(Color(3.1f, 2.7f, 1.9f), Color(0.17f, 0.35f, 1.5f), 5.0f, false, true);
+    Surface silver = Surface(Color(4.1f, 2.3f, 3.1f), Color(0.14f, 0.16f, 0.13f), 5.0f, false, true);
 
     world = new World(100, 3, Color(0.5294f, 0.8078f, 0.9215f), Color(0.03f, 0.03f, 0.03f), 10);
 
-    world->lights.push(Light(Point(1.0f, 5.0f, 30.0f), Color(1.0f, 0.0f, 0.0f), 100.0f));
-    world->lights.push(Light(Point(3.0f, 3.0f, 30.0f), Color(0.0f, 1.0f, 0.0f), 100.0f));
-    world->lights.push(Light(Point(5.0f, 1.0f, 30.0f), Color(0.0f, 0.0f, 1.0f), 100.0f));
+    world->lights.push(Light(Point(1.0f, 1.1f, 30.0f), Color(1.0f, 0.0f, 0.0f), 100.0f));
+    world->lights.push(Light(Point(1.1f, 1.1f, 30.0f), Color(0.0f, 1.0f, 0.0f), 100.0f));
+    world->lights.push(Light(Point(1.1f, 1.0f, 30.0f), Color(0.0f, 0.0f, 1.0f), 100.0f));
 
     world->objects.push(new GroundObject(whitediffuse));
 
@@ -116,7 +117,7 @@ void onInitialization() {
     ellipse.m[2][2] = 1;
     ellipse.m[3][3] = -1;
 
-    world->objects.push(new EllipsoidObject(silver, ellipse));
+    //world->objects.push(new EllipsoidObject(silver, ellipse));
 
     Point eye(-20.0f, -20.0f, 5.0f);
     Point lookAt(-10.0f, -10.0f, 4.5f);
@@ -126,6 +127,7 @@ void onInitialization() {
     Vector up = (right % direction).normalize();
     float scale = 2.5f;
 
+    bitmap_image bitmapImage(screenWidth, screenHeight);
 
     for (int i = 0; i < screenWidth * screenHeight; i++) {
         int x = i % screenHeight;
@@ -134,9 +136,13 @@ void onInitialization() {
         Point pixel = lookAt + right * (2.0f * x / screenWidth - 1.0f) * scale + up * (2.0f * y / screenHeight - 1.0f) * scale;
         Ray ray(pixel, (pixel - eye).normalize());
 
-        image[i] = world->trace(ray);
+        Color color = world->trace(ray);
+        image[i] = color;
+
+        bitmapImage.set_pixel((unsigned int const) x, (unsigned int const) y, (unsigned char const) (color.r * 255), (unsigned char const) (color.g * 255), (unsigned char const) (color.b * 255));
     }
 
+    bitmapImage.save_image("output.bmp");
 
 }
 
