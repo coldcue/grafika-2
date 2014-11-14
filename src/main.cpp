@@ -68,8 +68,8 @@
 #include "../bitmap_image.hpp"
 #include <thread>
 
-const unsigned int screenWidth = 1024;    // alkalmazás ablak felbontása
-const unsigned int screenHeight = 1024;
+const unsigned int screenWidth = 2048 * 4;    // alkalmazás ablak felbontása
+const unsigned int screenHeight = 2048 * 4;
 static const int MAX_THREADS = 8;
 
 Color image[screenWidth * screenHeight];
