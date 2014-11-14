@@ -66,12 +66,26 @@
 // Innentol modosithatod...
 #include "imps.cpp"
 #include "../bitmap_image.hpp"
+#include <thread>
 
-const int screenWidth = 10000;    // alkalmazás ablak felbontása
-const int screenHeight = 10000;
+const unsigned int screenWidth = 1024;    // alkalmazás ablak felbontása
+const unsigned int screenHeight = 1024;
+static const int MAX_THREADS = 8;
 
 Color image[screenWidth * screenHeight];
 World *world;
+
+void traceThread(Point eye, Point lookAt, Vector right, Vector up, float scale, unsigned int begin, unsigned int end) {
+    for (unsigned int i = begin; i < end; i++) {
+        unsigned int x = i % screenHeight;
+        unsigned int y = (i - (i % screenHeight)) / screenWidth;
+
+        Point pixel = lookAt + right * (2.0f * x / screenWidth - 1.0f) * scale + up * (2.0f * y / screenHeight - 1.0f) * scale;
+        Ray ray(pixel, (pixel - eye).normalize());
+
+        image[i] = world->trace(ray);
+    }
+}
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization() {
@@ -111,14 +125,6 @@ void onInitialization() {
     world->objects.push(new SphereObject(glass, 1.5f, Point(2.4f, 2.4f, 1.5f)));
     world->objects.push(new SphereObject(glass, 1.0f, Point(2.4f, 2.4f, 5.5f)));
 
-    QMatrix ellipse;
-    ellipse.m[0][0] = 1;
-    ellipse.m[1][1] = 1;
-    ellipse.m[2][2] = 1;
-    ellipse.m[3][3] = -1;
-
-    //world->objects.push(new EllipsoidObject(silver, ellipse));
-
     Point eye(-20.0f, -20.0f, 5.0f);
     Point lookAt(-10.0f, -10.0f, 4.5f);
 
@@ -127,23 +133,19 @@ void onInitialization() {
     Vector up = (right % direction).normalize();
     float scale = 2.5f;
 
-    bitmap_image bitmapImage(screenWidth, screenHeight);
+    std::thread *threads[MAX_THREADS];
+    unsigned int pixelPerThread = screenWidth * screenHeight / MAX_THREADS;
 
-    for (int i = 0; i < screenWidth * screenHeight; i++) {
-        int x = i % screenHeight;
-        int y = (i - (i % screenHeight)) / screenWidth;
-
-        Point pixel = lookAt + right * (2.0f * x / screenWidth - 1.0f) * scale + up * (2.0f * y / screenHeight - 1.0f) * scale;
-        Ray ray(pixel, (pixel - eye).normalize());
-
-        Color color = world->trace(ray);
-        image[i] = color;
-
-        bitmapImage.set_pixel((unsigned int const) x, (unsigned int const) y, (unsigned char const) (color.r * 255), (unsigned char const) (color.g * 255), (unsigned char const) (color.b * 255));
+    for (int i = 0; i < MAX_THREADS; i++) {
+        unsigned int begin, end;
+        begin = i * pixelPerThread;
+        end = begin + pixelPerThread;
+        threads[i] = new std::thread(traceThread, eye, lookAt, right, up, scale, begin, end);
     }
 
-    bitmapImage.save_image("output.bmp");
-
+    for (int i = 0; i < MAX_THREADS; i++) {
+        (*threads[i]).join();
+    }
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -197,7 +199,7 @@ void onIdle() {
 // A C++ program belepesi pontja, a main fuggvenyt mar nem szabad bantani
 int main(int argc, char **argv) {
     glutInit(&argc, argv);                // GLUT inicializalasa
-    glutInitWindowSize(600, 600);            // Alkalmazas ablak kezdeti merete 600x600 pixel
+    glutInitWindowSize(1000, 1000);            // Alkalmazas ablak kezdeti merete 600x600 pixel
     glutInitWindowPosition(100, 100);            // Az elozo alkalmazas ablakhoz kepest hol tunik fel
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);    // 8 bites R,G,B,A + dupla buffer + melyseg buffer
 
